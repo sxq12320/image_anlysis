@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from scipy.signal import firwin
 
 sample_rate = 1000
-duration = 1
+duration = 50
 frequency =  20
 
 t = np.arange(0, duration , 1/sample_rate)
@@ -56,18 +56,28 @@ for k in range(N):
     Xf[0] = xf[k]
     W = W + u * e[k] * Xf
 
-# plot1
+plt.figure(figsize=(30,40))
+plt.subplot(4, 1, 1)
+plt.plot(t, d, 'r-', alpha=0.8, label='input signal')
+plt.legend()
+plt.xlabel('Time')
+plt.ylabel('dB')
 
-plt.subplot(2, 1, 1)
+plt.subplot(4, 1, 2)
 plt.plot(t, d, 'r-', alpha=0.8, label='Expected signal')
 plt.plot(t, ys, 'b-', alpha=0.8, label='Anti noise')
 plt.legend()
 plt.xlabel('Time')
 plt.ylabel('dB')
 
-# plot2
-plt.subplot(2, 1, 2)
-plt.plot(t, e, 'r-', alpha=0.8, label='Error signal')
+plt.subplot(4, 1, 3)
+plt.plot(t, ys, 'b-', alpha=0.8, label='ys')
+plt.legend()
+plt.xlabel('Time')
+plt.ylabel('dB')
+
+plt.subplot(4, 1, 4)
+plt.plot(t, e, 'g-', alpha=0.8, label='Error signal')
 plt.legend()
 plt.xlabel('Time')
 plt.ylabel('dB')
