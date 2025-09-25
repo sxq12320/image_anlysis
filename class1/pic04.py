@@ -5,6 +5,8 @@ import numpy as np
 img = cv.imread('class1\img\pic04.jpg')
 
 img_float = img.astype(np.float32) / 255.0
+
+# BGR
 img_float[:, :, 0] *= 0.9   # 蓝色通道
 img_float[:, :, 1] *= 5.0   # 绿色通道
 img_float[:, :, 2] *= 0.9   # 红色通道

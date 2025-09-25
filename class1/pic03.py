@@ -4,6 +4,9 @@ import numpy as np
 
 img = cv.imread('class1\img\pic03.tif')
 
+if len(img.shape)==3:
+    img = cv.cvtColor(img , cv.COLOR_BGR2GRAY)
+
 sharpen_basic_x = np.array([
     [-1 , 0 , -1],
     [-2 , 0 , 2],
@@ -16,8 +19,8 @@ sharpen_basic_y = np.array([
     [1 , 2 , 1]
 ])#sober_y
 
-edge_x = cv.filter2D(img , -1 , sharpen_basic_x)
-edge_y = cv.filter2D(img , -1 , sharpen_basic_y)
+edge_x = cv.filter2D(img , -1 , sharpen_basic_x) # 卷积操作 
+edge_y = cv.filter2D(img , -1 , sharpen_basic_y) # 卷积操作 
 
 edge_combline = cv.addWeighted(
     cv.convertScaleAbs(edge_x) , 0.5,
@@ -39,3 +42,4 @@ plt.axis('off')
 
 plt.tight_layout()
 plt.show()
+print(edge_x)
