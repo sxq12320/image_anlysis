@@ -1,24 +1,33 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy.signal import firwin
+from scipy.signal import firwin,lfilter
+import audioread
+import librosa
+import soundfile as sf
 
-with open("test.mp3" ,'rb') as audio_file:
-    byte_data = audio_file.read()
-    byte_data = np.frombuffer(byte_data , dtype=np.uint8)
-print(byte_data)
+audio_data, sample_rate = librosa.load('class0\\test\\test.wav', sr=None)
 
-sample_rate = 1000
-duration = 50
-frequency =  20
+print("")
+print("=== 音频信息 ===")
+print(f"音频地址：class0\\test\\test.wav")
+print(f"采样率: {sample_rate} Hz")
+print(f"时长: {len(audio_data)/sample_rate:.2f} 秒")
+print(f"样本数: {len(audio_data)}")
+print(f"数据类型: {audio_data.dtype}")
+print(f"数值范围: [{audio_data.min():.3f}, {audio_data.max():.3f}]")
 
-t = np.arange(0, duration , 1/sample_rate)
-sin_win = np.sin(2*np.pi*frequency*t)
+N = len(audio_data)
+x = []
 
-noise_amplitude = 2
-noise = np.random.normal(0 , noise_amplitude , len(sin_win))
-x = noise + sin_win # 加一些高斯白噪声 , 输入信号
+for i in audio_data:
+    x.append(10*i)
 
-N = len(x)
+time = np.arange( 0 , N , 1)
+
+# plt.plot(time , x , 'r-' , alpha = 0.8)
+# plt.show()
+
+x = audio_data
 
 P = firwin(32 , 0.1)
 S = firwin(16 , 0.1)
@@ -61,7 +70,8 @@ for k in range(N):
     Xf[0] = xf[k]
     W = W + u * e[k] * Xf
 
-plt.figure(figsize=(30,40))
+t = time
+
 plt.subplot(4, 1, 1)
 plt.plot(t, d, 'r-', alpha=0.8, label='input signal')
 plt.legend()
@@ -87,3 +97,7 @@ plt.legend()
 plt.xlabel('Time')
 plt.ylabel('dB')
 plt.show()
+
+
+e_normalized = e  # 可选：归一化到 [-1, 1]
+sf.write('class0/test/output_e.wav', e_normalized, sample_rate)
