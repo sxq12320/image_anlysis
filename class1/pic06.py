@@ -2,32 +2,33 @@ import cv2 as cv
 import matplotlib.pyplot as plt
 import numpy as np
 
-Threshold =50
+def adjust_highlights_claahe(image , clip_limit = 2.0 , grid_size = (8,8)): 
+    lab = cv.cvtColor(image , cv.COLOR_BGR2LAB)
+    l , a , b = cv.split(lab)
+    clahe = cv.createCLAHE(clipLimit=clip_limit, tileGridSize=grid_size)
+    l_clahe = clahe.apply(l)
+    lab_clahe = cv.merge([l_clahe, a, b])
+    return cv.cvtColor(lab_clahe, cv.COLOR_LAB2BGR)
 
-gamma1 = 1.2
-c1 = 2
+# def gamma_correction(image , gamma = 1.0):
+#     inv_gamma = 1.0/gamma
+#     table = np.array([((i / 255.0) ** inv_gamma) * 255 for i in np.arange(0, 256)]).astype("uint8")
+#     return cv.LUT(image , table)
 
-gamma2 = 0.6
-c2 = 3.0
+img = cv.imread('class1\img\pic06.tif')
 
-img = cv.imread('class1/img/pic06.tif')
+Threshold = 120
+reduce_factor = 0.4
 
-if len(img.shape)==3:
-    img = cv.cvtColor(img , cv.COLOR_BGR2GRAY)
+img_hsv = cv.cvtColor(img , cv.COLOR_BGR2HSV)
+h , s , v = cv.split(img_hsv)
+mask = v > Threshold
+v_reduce = np.where(mask , v * reduce_factor , v).astype(np.uint8)
 
-def enhance(image , gamma , c):
-    enhanced = image.astype(np.float32)/255.0
-    enhanced = c * np.power(enhanced , gamma)
-    enhanced = (enhanced*255.0).astype(np.uint8)
-    return enhanced
-mask = img>Threshold
+hsv_reduced = cv.merge([h , s , v_reduce])
+enhanced1 = cv.cvtColor(hsv_reduced , cv.COLOR_HSV2BGR)
 
-enhanced1 = img.copy()
-enhanced1[mask] =(img[mask] * 0.8).astype(np.uint8)
-
-enhanced2 = enhance(enhanced1 , gamma2 , c2)
-
-
+enhanced2 =  adjust_highlights_claahe(img , clip_limit=5.0)
 
 plt.subplot(1 , 3 , 1)
 plt.imshow(img , cmap='gray')
